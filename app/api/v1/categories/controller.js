@@ -1,11 +1,12 @@
 const Categories = require('./model');
+const {
+    getAllCategories,
+    createCategories,
+} = require('../../../services/mongoose/categories');
 
 const create = async (req, res, next) => {
     try {
-        const { name } = req.body
-
-        // simpan
-        const result = await Categories.create({ name });
+        const result = await createCategories(req);
 
         //give response
         return res.status(201).json({
@@ -19,7 +20,7 @@ const create = async (req, res, next) => {
 
 const index = async (req, res, next) => {
     try {
-        const result = await Categories.find().select('_id name'); //select to filter
+        const result = await getAllCategories();
         res.status(200).json({
             data: result,
         });
@@ -54,20 +55,20 @@ const update = async (req, res, next) => {
         const { id } = req.params;
         const { name } = req.body
 
-        const isProduxtExist = await Categories.findOne({ _id: id})
-        if(!isProduxtExist){
+        const isProduxtExist = await Categories.findOne({ _id: id })
+        if (!isProduxtExist) {
             return res.status(404).json({
                 message: "Category not found"
             });
         }
 
-        if(!name){
+        if (!name) {
             return res.status(404).json({
                 message: "Name is required"
             });
         }
 
-        const result = await Categories.findOneAndUpdate( { _id: id, }, { name }, { new: true, runValidators: true} )
+        const result = await Categories.findOneAndUpdate({ _id: id, }, { name }, { new: true, runValidators: true })
 
         if (result) {
             return res.status(200).json({
@@ -85,8 +86,8 @@ const destroy = async (req, res, next) => {
     try {
         const { id } = req.params;
         const result = await Categories.findByIdAndDelete(id);
-        
-        if(result){
+
+        if (result) {
             return res.status(200).json({
                 message: "Successfully delete data",
                 data: result

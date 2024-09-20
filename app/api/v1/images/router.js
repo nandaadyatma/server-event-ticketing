@@ -11,3 +11,4 @@ router.post('/images', uploadMiddleware.single('avatar'), create)
 
 
 module.exports = router;
+

@@ -1,8 +1,11 @@
 const Categories = require("../../api/v1/categories/model");
 const { BadRequestError, NotFoundError } = require("../../errors");
 
-const getAllCategories = async () => {
-  const result = await Categories.find();
+const getAllCategories = async (req) => {
+  console.log("req.user");
+  console.log(req.user);
+
+  const result = await Categories.find({ organizer: req.user.organizer});
 
   return result;
 };
@@ -15,7 +18,7 @@ const createCategories = async (req) => {
 
   if (check) throw new BadRequestError("The category has duplicate name");
 
-  const result = await Categories.create({ name });
+  const result = await Categories.create({ name, organizer: req.user.organizer, });
 
   return result;
 };
@@ -23,7 +26,7 @@ const createCategories = async (req) => {
 const getOneCategories = async (req) => {
   const { id } = req.params;
 
-  const result = await Categories.findOne({ _id: id });
+  const result = await Categories.findOne({ _id: id, organizer: req.user.organizer});
 
   if (!result) throw new NotFoundError(`There's no category with id: ${id}`);
 
@@ -70,7 +73,7 @@ const checkingCategories = async (id) => {
   const result = await Categories.findOne({ _id: id });
 
   if (!result) throw new NotFoundError(`There's no category with id: ${id}`);
-  
+
   return result;
 };
 

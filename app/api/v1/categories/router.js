@@ -1,19 +1,24 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 //import product controller
-const { create, index, find, update, destroy } = require('./controller');
+const { create, index, find, update, destroy } = require("./controller");
 
-router.get('/categories', index);
+const {
+  authenticateUser,
+  authorizeRoles,
+} = require("../../../middlewares/auth");
 
-router.get('/categories/:id', find);
+// app.use(authenticateUser);
 
-router.put('/categories/:id', update);
+router.get("/categories", authenticateUser, index);
 
-router.delete('/categories/:id', destroy);
+router.get("/categories/:id", authenticateUser, find);
 
-router.post('/categories', create);
+router.put("/categories/:id", update);
 
+router.delete("/categories/:id", destroy);
 
+router.post("/categories", authenticateUser, create);
 
 module.exports = router;

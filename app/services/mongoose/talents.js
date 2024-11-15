@@ -8,7 +8,7 @@ const { NotFoundError, BadRequestError } = require("../../errors");
 const getAllTalents = async (req) => {
   const { keyword, role } = req.query;
 
-  let condition = {};
+  let condition = { organizer: req.user.organizer };
 
   if (keyword) {
     condition = { ...condition, name: { $regex: keyword, $options: "i" } };
@@ -36,11 +36,16 @@ const createTalents = async (req) => {
 
   await checkingImage(image);
 
-  const check = await Talents.findOne({ name });
+  const check = await Talents.findOne({ name, organizer: req.user.organizer });
 
   if (check) throw new BadRequestError("Talent is exist");
 
-  const result = await Talents.create({ name, image, role });
+  const result = await Talents.create({
+    name,
+    image,
+    role,
+    organizer: req.user.organizer,
+  });
 
   return result;
 };
@@ -48,7 +53,10 @@ const createTalents = async (req) => {
 const getOneTalent = async (req) => {
   const { id } = req.params;
 
-  const result = await Talents.findOne({ _id: id })
+  const result = await Talents.findOne({
+    _id: id,
+    organizer: req.user.organizer,
+  })
     .populate({
       path: "image",
       select: "_id name",
@@ -71,6 +79,7 @@ const updateTalents = async (req) => {
   const check = await Talents.findOne({
     name,
     _id: { $ne: id },
+    organizer: req.user.organizer,
   });
 
   // apa bila check true / data talents sudah ada maka kita tampilkan error bad request dengan message pembicara nama duplikat
@@ -78,7 +87,7 @@ const updateTalents = async (req) => {
 
   const result = await Talents.findOneAndUpdate(
     { _id: id },
-    { name, image, role },
+    { name, image, role, organizer: req.user.organizer },
     { new: true, runValidators: true }
   );
 
@@ -93,6 +102,7 @@ const deleteTalents = async (req) => {
 
   const check = await Talents.findOne({
     _id: id,
+    organizer: req.user.organizer,
   });
 
   if (!check) throw new NotFoundError(`There's no speaker with id: ${id}`);

@@ -41,6 +41,7 @@ const updateCategories = async (req) => {
   const check = await Categories.findOne({
     name,
     _id: { $ne: id }, //ne for (not equal), to filter
+    organizer: req.user.organizer,
   });
 
   //throw an error
@@ -60,7 +61,7 @@ const updateCategories = async (req) => {
 const deleteCategories = async (req) => {
   const { id } = req.params;
 
-  const check = await Categories.findOne({ _id: id });
+  const check = await Categories.findOne({ _id: id, organizer: req.user.organizer, });
 
   if (!check) throw new NotFoundError(`There's no category with id: ${id}`);
 

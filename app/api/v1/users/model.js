@@ -8,7 +8,7 @@ const userSchema = Schema(
             type: String,
             required: [true, "Organizer name must be filled"],
             minlength: 3,
-            maxlenght: 50,
+            maxlength: 50,
         },
         email: {
             type: String,

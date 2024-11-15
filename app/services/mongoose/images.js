@@ -5,8 +5,8 @@ const { NotFoundError } = require("../../errors");
 const createImages = async (req) => {
   const result = await Images.create({
     url: req.file
-      ? `uploads/${req.file.filename}`
-      : `uploads/avatar/default.jpeg`,
+      ? `/data/${req.file.filename}`
+      : `/data/avatar/default.jpeg`,
   });
 
   return result;
@@ -14,7 +14,7 @@ const createImages = async (req) => {
 
 // cara 2
 const generateUrlImage = async (req) => {
-  const result = `uploads/${req.file.filename}`;
+  const result = `/data/${req.file.filename}`;
 
   return result;
 };
